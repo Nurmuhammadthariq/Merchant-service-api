@@ -1,0 +1,14 @@
+{
+  "name": "miniproject-merchant-service",
+  "version": "1.0.0",
+  "description": "Miniproject Merchant Service",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Thoriq",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.2"
+  }
+}
