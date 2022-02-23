@@ -1,5 +1,26 @@
 const Users = require('../models/UserModel');
 const bcrypt = require('bcrypt');
+const generateToken = require('../../utils/generateToken');
+
+// @desc Auth user & get token
+// @route POST /api/users/login
+// @access public
+const authUser = async (req, res) => {
+  const { email, password } = req.body;
+
+  const user = await Users.findOne({ where: { email: email } });
+  const matchPassword = await bcrypt.compare(password, user.password);
+  if (user && matchPassword) {
+    res.json({
+      id: user.id,
+      email: user.email,
+      token: generateToken(user.id),
+    });
+  } else {
+    res.status(401);
+    throw new Error('Email or password Invalid');
+  }
+};
 
 // @desc Get all users
 // @route GET /api/users
@@ -15,6 +36,9 @@ const getUsers = async (req, res) => {
   }
 };
 
+// @desc Registration new user
+// @route Post /api/users/register
+// @access Private
 const registerUser = async (req, res) => {
   const { name, email, password, confPassword, address, phone_number } =
     req.body;
@@ -23,7 +47,7 @@ const registerUser = async (req, res) => {
   if (password !== confPassword)
     return res
       .status(400)
-      .send({ msg: `password and confirm password doesn't mactch` });
+      .send({ msg: `password and confirm password doesn't match` });
 
   if (userExists) {
     return res.status(400).send({ msg: `User already exists` });
@@ -39,9 +63,30 @@ const registerUser = async (req, res) => {
       address: address,
       phone_number: phone_number,
     });
-    res.send(user);
-    res.json({ msg: 'Register Berhasil' });
-  } catch (error) {}
+
+    if (user) {
+      res.status(201).json({
+        id: user.id,
+        email: user.email,
+        password: user.password,
+        token: generateToken(user.id),
+      });
+    }
+  } catch (error) {
+    res.send(error);
+  }
 };
 
-module.exports = { getUsers, registerUser };
+// @desc Get user profile
+// @route GET /api/users/profile
+// @access Private
+const getUserProfile = async (req, res) => {
+  const user = await Users.findAll({
+    where: { id: req.user.id },
+    attributes: ['name', 'email', 'address', 'phone_number'],
+  });
+
+  res.json({ data: user });
+};
+
+module.exports = { getUsers, registerUser, authUser, getUserProfile };
