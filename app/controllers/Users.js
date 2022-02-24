@@ -1,6 +1,7 @@
 const Users = require('../models/UserModel');
 const bcrypt = require('bcrypt');
 const generateToken = require('../../utils/generateToken');
+const model = require('../models/index');
 
 // @desc Auth user & get token
 // @route POST /api/users/login
@@ -89,4 +90,57 @@ const getUserProfile = async (req, res) => {
   res.json({ data: user });
 };
 
-module.exports = { getUsers, registerUser, authUser, getUserProfile };
+// @desc update user
+// @route PUT /api/users/profile
+// @access Private
+const updateUser = async (req, res) => {
+  try {
+    const { name, email, password, address, phone_number } = req.body;
+
+    const salt = await bcrypt.genSalt(10);
+    const hashPassword = await bcrypt.hash(password, salt);
+
+    const updateUser = await Users.update(
+      {
+        name: name,
+        email: email,
+        password: hashPassword,
+        address: address,
+        phone_number: phone_number,
+      },
+      { where: { id: req.user.id } }
+    );
+
+    if (updateUser) {
+      res.status(200).json({
+        status: 'success',
+        message: 'data has been uodated',
+      });
+    }
+  } catch (error) {
+    res.send(error);
+  }
+};
+
+const deleteUser = async (req, res) => {
+  const user = await Users.findOne({ where: { id: req.params.id } });
+  if (user) {
+    await Users.destroy({ where: { id: req.params.id } });
+    res.status(200).json({
+      message: 'User removed',
+    });
+  } else {
+    res.status(400).json({
+      message: 'User not found',
+    });
+  }
+};
+
+module.exports = {
+  getUsers,
+  registerUser,
+  authUser,
+  getUserProfile,
+  updateUser,
+  deleteUser,
+};

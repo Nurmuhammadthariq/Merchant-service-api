@@ -3,7 +3,7 @@ const { Sequelize, DataTypes, DATE } = require('sequelize');
 const db = require('../../config/Database');
 
 const Users = db.define(
-  'users_merchant',
+  'users',
   {
     name: {
       type: DataTypes.STRING,
