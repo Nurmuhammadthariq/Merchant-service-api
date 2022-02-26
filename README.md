@@ -1,2 +1,2 @@
-# Merchant Service API based petsore.swagger.io
+# Merchant Service API based Backend Server Development dibimibing
 This is project is Merchant Service API Mini Project Day32 from Dibimbing course in the form the form of Back-end API Server Development. This project uses ExpressJs framework, MySQL as the database, Sequelize as ORM to connect database, create model, migration table, also using express validator for validation form this project can be accesed from your local computer so you can follow this documentation to use locally on you computer
