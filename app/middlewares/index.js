@@ -1,6 +1,6 @@
 const { check, validationResult } = require('express-validator');
 
-exports.runValidation = (req, res) => {
+exports.runValidation = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(404).json({
@@ -26,4 +26,22 @@ exports.validationRegister = [
     .withMessage('Password must be 6 character '),
   check('address', 'Address cannot be empty').notEmpty(),
   check('phone_number', 'Phone number cannot be empty').notEmpty().isNumeric(),
+];
+
+exports.validationProducts = [
+  check('name', 'Name cannot be empty')
+    .notEmpty()
+    .isLength({ min: 3, max: 50 })
+    .withMessage('Must be at least 6 chars long'),
+  check('description', 'Description cannot be empty').notEmpty(),
+  check('quantity', 'quantity required')
+    .notEmpty()
+    .withMessage('Must be at least 1 quantity')
+    .isNumeric()
+    .withMessage('quantity must be an integer'),
+  check('price', 'price required')
+    .notEmpty()
+    .isNumeric()
+    .isLength({ min: 10000 })
+    .withMessage('Minim price 10000'),
 ];

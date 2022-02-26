@@ -9,16 +9,16 @@ const model = require('../models/index');
 const authUser = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await Users.findOne({ where: { email: email } });
-  const matchPassword = await bcrypt.compare(password, user.password);
+  const user = await Users.findAll({ where: { email: email } });
+  const matchPassword = await bcrypt.compare(password, user[0].password);
   if (user && matchPassword) {
     res.json({
-      id: user.id,
-      email: user.email,
-      token: generateToken(user.id),
+      id: user[0].id,
+      email: user[0].email,
+      token: generateToken(user[0].id),
     });
   } else {
-    res.status(401);
+    res.status(401).send({ msg: 'Email or password invalid' });
     throw new Error('Email or password Invalid');
   }
 };
@@ -114,7 +114,7 @@ const updateUser = async (req, res) => {
     if (updateUser) {
       res.status(200).json({
         status: 'success',
-        message: 'data has been uodated',
+        message: 'data has been updated',
       });
     }
   } catch (error) {
