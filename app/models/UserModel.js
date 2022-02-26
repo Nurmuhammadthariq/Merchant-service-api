@@ -1,5 +1,6 @@
 const { Sequelize, DataTypes, DATE } = require('sequelize');
 // const sequelize = new Sequelize('sqlite::memory:');
+const Products = require('./ProductModel');
 const db = require('../../config/Database');
 
 const Users = db.define(
@@ -30,5 +31,8 @@ const Users = db.define(
     freezeTableName: true,
   }
 );
+
+Users.hasMany(Products, { foreignKey: 'user_id', as: 'products' });
+Products.belongsTo(Users, { foreignKey: 'user_id', as: 'users' });
 
 module.exports = Users;

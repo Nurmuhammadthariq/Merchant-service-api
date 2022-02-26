@@ -1,4 +1,5 @@
 const Users = require('../models/UserModel');
+const Product = require('../models/ProductModel');
 const bcrypt = require('bcrypt');
 const generateToken = require('../../utils/generateToken');
 const model = require('../models/index');
@@ -29,7 +30,12 @@ const authUser = async (req, res) => {
 const getUsers = async (req, res) => {
   try {
     const users = await Users.findAll({
-      attributes: ['id', 'name', 'email', 'address'],
+      include: [
+        {
+          model: Product,
+          as: 'products',
+        },
+      ],
     });
     res.json(users);
   } catch (error) {
@@ -83,8 +89,15 @@ const registerUser = async (req, res) => {
 // @access Private
 const getUserProfile = async (req, res) => {
   const user = await Users.findAll({
+    include: [
+      {
+        model: Product,
+        as: 'products',
+        attributes: ['id', 'name'],
+      },
+    ],
+    attributes: ['id', 'name', 'email', 'address'],
     where: { id: req.user.id },
-    attributes: ['name', 'email', 'address', 'phone_number'],
   });
 
   res.json({ data: user });
